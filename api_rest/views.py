@@ -9,6 +9,12 @@ from .models import Document
 from .serializers import UserSerializer, DocumentSerializer
 from django.contrib.auth import get_user_model
 
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from google.cloud import texttospeech
+import os
+
 User = get_user_model()
 
 class RegisterView(generics.CreateAPIView):
@@ -86,3 +92,39 @@ class DocumentSaveView(APIView):
                 "plain_text": document.plain_text
             }
         }, status=status.HTTP_200_OK)
+
+# views.py
+
+from google.oauth2 import service_account
+from pathlib import Path
+from django.http import HttpResponse
+
+class TextToSpeechView(APIView):
+    def post(self, request):
+        text = request.data.get('text')
+        if not text:
+            return Response({"error": "Texto ausente"}, status=status.HTTP_400_BAD_REQUEST)
+
+        BASE_DIR = Path(__file__).resolve().parent.parent  # ou onde está o manage.py
+
+        creds = service_account.Credentials.from_service_account_file(
+            str(BASE_DIR / "secrets" / "tts-key.json")
+        )
+        client = texttospeech.TextToSpeechClient(credentials=creds)
+
+        synthesis_input = texttospeech.SynthesisInput(text=text)
+        voice = texttospeech.VoiceSelectionParams(
+            language_code="pt-BR",
+            ssml_gender=texttospeech.SsmlVoiceGender.FEMALE
+        )
+        audio_config = texttospeech.AudioConfig(
+            audio_encoding=texttospeech.AudioEncoding.MP3
+        )
+
+        response = client.synthesize_speech(
+            input=synthesis_input,
+            voice=voice,
+            audio_config=audio_config
+        )
+
+        return HttpResponse(response.audio_content, content_type='audio/mpeg')

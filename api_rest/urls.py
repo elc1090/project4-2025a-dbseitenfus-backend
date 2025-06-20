@@ -1,7 +1,7 @@
 # core/urls.py
 
 from django.urls import path
-from .views import RegisterView, UserDetailView, LoginView, DocumentListCreateView, DocumentDetailView, DocumentSaveView
+from .views import RegisterView, UserDetailView, LoginView, DocumentListCreateView, DocumentDetailView, DocumentSaveView, TextToSpeechView
 
 urlpatterns = [
     path('register/', RegisterView.as_view()),
@@ -10,5 +10,5 @@ urlpatterns = [
     path('documents/<int:pk>/', DocumentDetailView.as_view()),
     path('documents/<int:pk>/save/', DocumentSaveView.as_view(), name='document-save'),
     path('user/', UserDetailView.as_view(), name='user-detail'), 
-
+    path('tts/', TextToSpeechView.as_view(), name='tts'),
 ]
