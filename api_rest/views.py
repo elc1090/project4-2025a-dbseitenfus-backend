@@ -36,12 +36,23 @@ class LoginView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
-        username = request.data.get('username')
+        print("DADOS RECEBIDOS:", request.data)
+        email = request.data.get('email')
         password = request.data.get('password')
-        user = authenticate(username=username, password=password)
+        user = authenticate(username=email, password=password)
         if user:
             token, _ = Token.objects.get_or_create(user=user)
-            return Response({'token': token.key})
+            return Response({
+                "token": token.key,
+                "user": {
+                    "id": user.id,
+                    "email": user.email,
+                    "username": user.username,
+                    "first_name": user.first_name,
+                    "last_name": user.last_name,
+                    "name": f"{user.first_name} {user.last_name}"
+                }
+            })
         return Response({'error': 'Credenciais inválidas'}, status=400)
 
 class DocumentListCreateView(generics.ListCreateAPIView):
