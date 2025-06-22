@@ -139,3 +139,40 @@ class TextToSpeechView(APIView):
         )
 
         return HttpResponse(response.audio_content, content_type='audio/mpeg')
+    
+class GoogleLoginView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        email = request.data.get("email")
+        name = request.data.get("name", "")
+        first_name = name.split(" ")[0] if name else ""
+        last_name = " ".join(name.split(" ")[1:]) if name else ""
+
+        if not email:
+            return Response({"error": "Email é obrigatório"}, status=status.HTTP_400_BAD_REQUEST)
+
+        user = User.objects.filter(email=email).first()
+
+        if not user:
+            user = User.objects.create_user(
+                username=email,
+                email=email,
+                password=User.objects.make_random_password(),
+                first_name=first_name,
+                last_name=last_name
+            )
+
+        token, _ = Token.objects.get_or_create(user=user)
+
+        return Response({
+            "token": token.key,
+            "user": {
+                "id": user.id,
+                "email": user.email,
+                "username": user.username,
+                "first_name": user.first_name,
+                "last_name": user.last_name,
+                "name": f"{user.first_name} {user.last_name}"
+            }
+        }, status=status.HTTP_200_OK)
