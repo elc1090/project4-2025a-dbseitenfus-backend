@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: https://project3-2025a-dbseitenfus-backend.onrender.com
+    name: https://project4-2025a-dbseitenfus-backend.onrender.com
     env: python
     buildCommand: pip install -r requirements.txt
     startCommand: |

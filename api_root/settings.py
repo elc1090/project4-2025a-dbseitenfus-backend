@@ -137,7 +137,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWED_ORIGINS = [
-    "https://project3-2025a-dbseitenfus-frontend.vercel.app"
+    "https://project4-2025a-dbseitenfus-frontend.vercel.app"
 ]
 
 REST_FRAMEWORK = {
