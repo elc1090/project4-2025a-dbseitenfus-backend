@@ -14,6 +14,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from google.cloud import texttospeech
 import os
+import uuid
 
 User = get_user_model()
 
@@ -73,6 +74,7 @@ class DocumentDetailView(generics.RetrieveUpdateDestroyAPIView):
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from django.shortcuts import get_object_or_404
+
 
 class DocumentSaveView(APIView):
     permission_classes = [IsAuthenticated]
@@ -140,6 +142,10 @@ class TextToSpeechView(APIView):
 
         return HttpResponse(response.audio_content, content_type='audio/mpeg')
     
+    
+from django.contrib.auth.models import BaseUserManager
+
+    
 class GoogleLoginView(APIView):
     permission_classes = [permissions.AllowAny]
 
@@ -158,7 +164,7 @@ class GoogleLoginView(APIView):
             user = User.objects.create_user(
                 username=email,
                 email=email,
-                password=User.objects.make_random_password(),
+                password=str(uuid.uuid4()),
                 first_name=first_name,
                 last_name=last_name
             )
