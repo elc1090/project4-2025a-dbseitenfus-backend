@@ -1,5 +1,6 @@
 # core/views.py
 
+import json
 from rest_framework import generics, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -111,6 +112,7 @@ class DocumentSaveView(APIView):
 from google.oauth2 import service_account
 from pathlib import Path
 from django.http import HttpResponse
+from io import StringIO
 
 class TextToSpeechView(APIView):
     def post(self, request):
@@ -118,11 +120,12 @@ class TextToSpeechView(APIView):
         if not text:
             return Response({"error": "Texto ausente"}, status=status.HTTP_400_BAD_REQUEST)
 
-        BASE_DIR = Path(__file__).resolve().parent.parent  # ou onde está o manage.py
+        json_key = os.environ.get("GOOGLE_TTS_KEY")
+        if not json_key:
+            return Response({"error": "Credencial não encontrada"}, status=500)
 
-        creds = service_account.Credentials.from_service_account_file(
-            str(BASE_DIR / "secrets" / "tts-key.json")
-        )
+        creds_dict = json.loads(json_key)
+        creds = service_account.Credentials.from_service_account_info(creds_dict)
         client = texttospeech.TextToSpeechClient(credentials=creds)
 
         synthesis_input = texttospeech.SynthesisInput(text=text)
