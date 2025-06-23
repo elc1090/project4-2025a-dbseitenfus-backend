@@ -17,8 +17,8 @@ urlpatterns = [
     path('login/', LoginView.as_view()),
     path('google-login/', GoogleLoginView.as_view()),
     path('documents/', DocumentListCreateView.as_view()),
-    path('documents/<int:pk>/', DocumentDetailView.as_view()),
-    path('documents/<int:pk>/save/', DocumentSaveView.as_view(), name='document-save'),
+    path('documents/<uuid:pk>/', DocumentDetailView.as_view()),
+    path('documents/<uuid:pk>/save/', DocumentSaveView.as_view(), name='document-save'),
     path('user/', UserDetailView.as_view(), name='user-detail'), 
     path('tts/', TextToSpeechView.as_view(), name='tts'),
 ]
